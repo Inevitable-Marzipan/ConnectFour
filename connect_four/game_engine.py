@@ -96,8 +96,7 @@ class C4GameEngine:
         board = self.get_state()
         output = ''
         for row in board:
-            for col in row:
-                output += col
+            output += '|'.join(row)
             output += '\n'
         return output
 

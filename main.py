@@ -2,8 +2,7 @@ from connect_four.game_engine import C4GameEngine
 
 def main():
     eng = C4GameEngine()
-    print(*eng.get_state(), sep='\n')
-    #print(eng)
+    print(eng)
     print('\n')
     player1 = eng.PLAYER_ONE
     player2 = eng.PLAYER_TWO
@@ -17,8 +16,7 @@ def main():
 
         eng.play_move(move)
         print('\n')
-        print(*eng.get_state(), sep='\n')
-        #print(eng)
+        print(eng)
         print('\n')
 
     print('Player Won')
