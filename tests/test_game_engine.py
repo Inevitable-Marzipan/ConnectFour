@@ -202,6 +202,22 @@ def test_C4GameEngine_winning_positive_diagonal_states(player, col_offset, row_o
 
     assert eng.winning_state(player) == True
 
+@pytest.mark.parametrize("player", C4GameEngine.PLAYERS)
+def test_C4GameEngine_play_winning_move(player):
+    eng = C4GameEngine()
+    in_a_row = eng.IN_A_ROW
+    empty_space = eng.EMPTY_SPACE
+
+    initial_board = [[empty_space for _ in range(COLUMNS)] for _ in range(ROWS)]
+    initial_board[ROWS - 1][:in_a_row - 1] = [player] * (in_a_row - 1)
+    eng.board_state = initial_board
+    eng.player = player
+
+    eng.play_move(in_a_row - 1)
+
+    assert eng.done == True
+
+
 @pytest.mark.skip()
 def test_C4GameEngine_winning_state(player):
     eng = C4GameEngine()

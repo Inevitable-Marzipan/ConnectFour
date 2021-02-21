@@ -14,6 +14,8 @@ class C4GameEngine:
         self.player = self.PLAYER_ONE
         self.column_heights = {n: self.ROWS - 1 for n in range(self.COLUMNS)}
         self.moves = 0
+        self.allowed_moves = set([c for c in range(self.COLUMNS)])
+        self.done = False
 
     def get_state(self):
         return self.board_state
@@ -23,21 +25,24 @@ class C4GameEngine:
 
     def change_column_height(self, column):
         self.column_heights[column] -= 1
+        if self.column_heights[column] < 0:
+            self.allowed_moves.remove(column)
 
     def play_move(self, column):
         if not self.is_move_valid(column):
             raise InvalidMoveError (f"Column {column} already full")
 
         self.board_state[self.column_heights[column]][column] = self.player
-        self.change_player()
         self.change_column_height(column)
         self.moves += 1
+        won = self.winning_state(self.player)
+        self.done = won or (self.moves == self.COLUMNS * self.ROWS)
+        self.change_player()
 
     def is_move_valid(self, column):
         if column > self.COLUMNS - 1:
             return False
-        validity = self.column_heights[column] >= 0
-        return validity
+        return column in self.allowed_moves
 
     def check_horizontal(self, player):
         in_a_row = self.IN_A_ROW
@@ -90,8 +95,6 @@ class C4GameEngine:
                     self.check_negative_diag(player),
                     self.check_positive_diag(player)])
     
-
-
     def __str__(self):
         board = self.get_state()
         output = ''
@@ -101,4 +104,5 @@ class C4GameEngine:
         return output
 
     def reset(self):
+
         self.__init__()
