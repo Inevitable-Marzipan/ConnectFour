@@ -1,25 +1,37 @@
 from connect_four.game_engine import C4GameEngine
+from connect_four.TwoPlayerGame import TwoPlayerGame
+from connect_four.Players import HumanPlayer, RandomPlayer
+from collections import Counter
+import matplotlib.pyplot as plt
 
 def main():
-    eng = C4GameEngine()
-    print(eng)
-    print('\n')
-    player1 = eng.PLAYER_ONE
-    player2 = eng.PLAYER_TWO
-    while not any([eng.winning_state(player1), eng.winning_state(player2)]):
-        valid = False
-        while not valid:
-            move = input('Which column to play: ')
-            move = int(move)
-            if eng.is_move_valid(move):
-                valid = True
+    #p1 = HumanPlayer()
+    p1 = RandomPlayer()
+    #p2 = HumanPlayer()
+    p2 = RandomPlayer()
+    env = C4GameEngine()
 
-        eng.play_move(move)
-        print('\n')
-        print(eng)
-        print('\n')
-
-    print('Player Won')
+    rounds = 100000
+    outcomes = []
+    winners = []
+    round_lengths = []
+    for _ in range(rounds):
+        game = TwoPlayerGame(env, [p1, p2], verbose=False)
+        game.play()
+        outcomes.append(game.env)
+        winners.append(game.winner)
+        round_lengths.append(game.rounds)
+    
+    #for outcome in outcomes:
+    #    pass
+    #    print(outcome)
+    
+    c = Counter(winners)
+    print(c.most_common())
+    r = Counter(round_lengths)
+    print(sorted(r.items()))
+    plt.hist(round_lengths)
+    plt.savefig('hist.png')
 
 if __name__ == '__main__':
     main()
