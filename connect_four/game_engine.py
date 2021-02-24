@@ -14,7 +14,7 @@ class C4GameEngine:
         self.player = self.PLAYER_ONE
         self.column_heights = {n: self.ROWS - 1 for n in range(self.COLUMNS)}
         self.moves = 0
-        self.allowed_moves = set([c for c in range(self.COLUMNS)])
+        self.allowed_moves = set(range(self.COLUMNS))
         self.done = False
 
     def get_state(self):
@@ -38,6 +38,7 @@ class C4GameEngine:
         won = self.winning_state(self.player)
         self.done = won or (self.moves == self.COLUMNS * self.ROWS)
         self.change_player()
+        return self
 
     def is_move_valid(self, column):
         if column > self.COLUMNS - 1:
@@ -94,7 +95,7 @@ class C4GameEngine:
                     self.check_vertical(player),
                     self.check_negative_diag(player),
                     self.check_positive_diag(player)])
-    
+
     def __str__(self):
         board = self.get_state()
         output = ''
@@ -106,3 +107,9 @@ class C4GameEngine:
     def reset(self):
 
         self.__init__()
+
+    def score(self):
+        if self.done:
+            return -100
+        else:
+            return 100
