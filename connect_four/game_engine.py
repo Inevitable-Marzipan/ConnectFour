@@ -3,14 +3,14 @@ from .errors import InvalidMoveError
 class C4GameEngine:
     ROWS = 6
     COLUMNS = 7
-    EMPTY_SPACE = '_'
+    EMPTY = '_'
     PLAYER_ONE = 'O'
     PLAYER_TWO = 'X'
     IN_A_ROW = 4
     PLAYERS = [PLAYER_ONE, PLAYER_TWO]
 
     def __init__(self):
-        self.board_state = [[self.EMPTY_SPACE for _ in range(7)] for _ in range(6)]
+        self.board_state = [[self.EMPTY for _ in range(7)] for _ in range(6)]
         self.player = self.PLAYER_ONE
         self.column_heights = {n: self.ROWS - 1 for n in range(self.COLUMNS)}
         self.moves = 0
@@ -45,6 +45,16 @@ class C4GameEngine:
             return False
         return column in self.allowed_moves
 
+    def get_horizontal(self):
+        arrs = []
+        in_a_row = self.IN_A_ROW
+        board = self.get_state()
+        for row in board:
+            for offset in range(self.COLUMNS - in_a_row + 1):
+                row_extract = row[offset: offset + in_a_row]
+                arrs.append(row_extract)
+        return arrs
+
     def check_horizontal(self, player):
         in_a_row = self.IN_A_ROW
         board = self.get_state()
@@ -55,6 +65,16 @@ class C4GameEngine:
                 if  row_extract == win_condition:
                     return True
         return False
+
+    def get_vertical(self):
+        arrs = []
+        in_a_row = self.IN_A_ROW
+        board = self.get_state()
+        for col in range(self.COLUMNS):
+            for offset in range(self.ROWS - in_a_row + 1):
+                col_extract = [board[r][col] for r in range(offset, offset + in_a_row)]
+                arrs.append(col_extract)
+        return arrs
 
     def check_vertical(self, player):
         in_a_row = self.IN_A_ROW
@@ -67,6 +87,16 @@ class C4GameEngine:
                     return True
         return False
 
+    def get_negative_diag(self):
+        arrs = []
+        in_a_row = self.IN_A_ROW
+        board = self.get_state()
+        for col_offset in range(self.COLUMNS - in_a_row + 1):
+            for row_offset in range(self.ROWS - in_a_row + 1):
+                extract = [board[row_offset + v][col_offset + v] for v in range(in_a_row)]
+                arrs.append(extract)
+        return arrs
+
     def check_negative_diag(self, player):
         in_a_row = self.IN_A_ROW
         board = self.get_state()
@@ -77,6 +107,17 @@ class C4GameEngine:
                 if extract == win_condition:
                     return True
         return False
+
+    def get_positive_diag(self):
+        arrs = []
+        in_a_row = self.IN_A_ROW
+        board = self.get_state()
+        for col_offset in range(self.COLUMNS - in_a_row + 1):
+            for row_offset in range(self.ROWS - in_a_row + 1):
+                row_start = self.ROWS - 1 - row_offset
+                extract = [board[row_start - v][col_offset + v] for v in range(in_a_row)]
+                arrs.append(extract)
+        return arrs
 
     def check_positive_diag(self, player):
         in_a_row = self.IN_A_ROW
@@ -108,8 +149,44 @@ class C4GameEngine:
 
         self.__init__()
 
+    def evaluate_window(self, window, piece):
+        score = 0
+        opp_piece = self.PLAYER_ONE
+        if piece == self.PLAYER_ONE:
+            opp_piece = self.PLAYER_TWO
+
+        if window.count(piece) == 4:
+            score += 100
+        elif window.count(piece) == 3 and window.count(self.EMPTY) == 1:
+            score += 5
+        elif window.count(piece) == 2 and window.count(self.EMPTY) == 2:
+            score += 2
+
+        if window.count(opp_piece) == 4:
+            score -= 100
+        elif window.count(opp_piece) == 3 and window.count(self.EMPTY) == 1:
+            score -= 10
+
+        return score
+
     def score(self):
-        if self.done:
-            return -100
-        else:
-            return 100
+
+        score = 0
+
+        centre_col = self.COLUMNS // 2
+        board = self.get_state()
+        center_array = [board[r][centre_col] for r in range(self.ROWS)]
+        center_count = center_array.count(self.player)
+        score += center_count * 3
+
+        horizontal = self.get_horizontal()
+        vertical = self.get_vertical()
+        negative_diag = self.get_negative_diag()
+        positive_diag = self.get_positive_diag()
+
+        score += sum([self.evaluate_window(window, self.player) for window in horizontal])
+        score += sum([self.evaluate_window(window, self.player) for window in vertical])
+        score += sum([self.evaluate_window(window, self.player) for window in negative_diag])
+        score += sum([self.evaluate_window(window, self.player) for window in positive_diag])
+
+        return score

@@ -8,7 +8,7 @@ ROWS = C4GameEngine.ROWS
 def test_C4GameEngine_initial_state():
     eng = C4GameEngine()
     eng_state = eng.get_state()
-    empty_space = C4GameEngine.EMPTY_SPACE
+    empty_space = C4GameEngine.EMPTY
 
     initial_board = [[empty_space for _ in range(COLUMNS)] for _ in range(ROWS)]
 
@@ -19,9 +19,9 @@ def test_C4GameEngine_first_move(first_move):
     eng = C4GameEngine()
     eng.play_move(first_move)
 
-    bottom_row = [C4GameEngine.EMPTY_SPACE for _ in range(COLUMNS)]
+    bottom_row = [C4GameEngine.EMPTY for _ in range(COLUMNS)]
     bottom_row[first_move] = C4GameEngine.PLAYER_ONE
-    rest_of_board = [[C4GameEngine.EMPTY_SPACE for _ in range(COLUMNS)] for _ in range(ROWS - 1)]
+    rest_of_board = [[C4GameEngine.EMPTY for _ in range(COLUMNS)] for _ in range(ROWS - 1)]
     expected_state = rest_of_board + [bottom_row]
 
     assert eng.get_state() == expected_state
@@ -53,11 +53,11 @@ def test_C4GameEngine_two_moves_same_position(column):
     board_state = eng.get_state()
 
 
-    bottom_row = [C4GameEngine.EMPTY_SPACE for _ in range(COLUMNS)]
+    bottom_row = [C4GameEngine.EMPTY for _ in range(COLUMNS)]
     bottom_row[column] = C4GameEngine.PLAYER_ONE
-    next_up_row = [C4GameEngine.EMPTY_SPACE for _ in range(COLUMNS)]
+    next_up_row = [C4GameEngine.EMPTY for _ in range(COLUMNS)]
     next_up_row[column] = C4GameEngine.PLAYER_TWO
-    rest_of_board = [[C4GameEngine.EMPTY_SPACE for _ in range(COLUMNS)] for _ in range(ROWS - 2)]
+    rest_of_board = [[C4GameEngine.EMPTY for _ in range(COLUMNS)] for _ in range(ROWS - 2)]
     expected_state = rest_of_board + [next_up_row] + [bottom_row]
 
     assert board_state == expected_state
@@ -118,7 +118,7 @@ def test_C4GameEngine_reset_board():
     eng.reset()
     board_state = eng.get_state()
 
-    expected_state = [[C4GameEngine.EMPTY_SPACE for _ in range(COLUMNS)] for _ in range(ROWS)]
+    expected_state = [[C4GameEngine.EMPTY for _ in range(COLUMNS)] for _ in range(ROWS)]
 
     assert board_state == expected_state
 
@@ -146,9 +146,9 @@ def test_C4GameEngine_winning_horizontal_states(player, row, offset):
     eng = C4GameEngine()
     in_a_row = C4GameEngine.IN_A_ROW
 
-    winning_row = [C4GameEngine.EMPTY_SPACE for _ in range(COLUMNS)]
+    winning_row = [C4GameEngine.EMPTY for _ in range(COLUMNS)]
     winning_row[offset: offset + in_a_row] = [player for _ in range(in_a_row)]
-    winning_board = [[C4GameEngine.EMPTY_SPACE for _ in range(COLUMNS)] for _ in range(ROWS)]
+    winning_board = [[C4GameEngine.EMPTY for _ in range(COLUMNS)] for _ in range(ROWS)]
     winning_board[row] = winning_row
     eng.board_state = winning_board
 
@@ -160,7 +160,7 @@ def test_C4GameEngine_winning_horizontal_states(player, row, offset):
 def test_C4GameEngine_winning_vertical_states(player, column, offset):
     eng = C4GameEngine()
     in_a_row = C4GameEngine.IN_A_ROW
-    empty_space = C4GameEngine.EMPTY_SPACE
+    empty_space = C4GameEngine.EMPTY
 
     winning_board = [[empty_space for _ in range(COLUMNS)] for _ in range(ROWS)]
     for row in range(offset, offset + in_a_row):
@@ -175,7 +175,7 @@ def test_C4GameEngine_winning_vertical_states(player, column, offset):
 def test_C4GameEngine_winning_negative_diagonal_states(player, col_offset, row_offset):
     eng = C4GameEngine()
     in_a_row = C4GameEngine.IN_A_ROW
-    empty_space = C4GameEngine.EMPTY_SPACE
+    empty_space = C4GameEngine.EMPTY
 
     winning_board = [[empty_space for _ in range(COLUMNS)] for _ in range(ROWS)]
     for val in range(in_a_row):
@@ -191,7 +191,7 @@ def test_C4GameEngine_winning_negative_diagonal_states(player, col_offset, row_o
 def test_C4GameEngine_winning_positive_diagonal_states(player, col_offset, row_offset):
     eng = C4GameEngine()
     in_a_row = C4GameEngine.IN_A_ROW
-    empty_space = C4GameEngine.EMPTY_SPACE
+    empty_space = C4GameEngine.EMPTY
 
     winning_board = [[empty_space for _ in range(COLUMNS)] for _ in range(ROWS)]
     for val in range(in_a_row):
@@ -206,7 +206,7 @@ def test_C4GameEngine_winning_positive_diagonal_states(player, col_offset, row_o
 def test_C4GameEngine_play_winning_move(player):
     eng = C4GameEngine()
     in_a_row = eng.IN_A_ROW
-    empty_space = eng.EMPTY_SPACE
+    empty_space = eng.EMPTY
 
     initial_board = [[empty_space for _ in range(COLUMNS)] for _ in range(ROWS)]
     initial_board[ROWS - 1][:in_a_row - 1] = [player] * (in_a_row - 1)
