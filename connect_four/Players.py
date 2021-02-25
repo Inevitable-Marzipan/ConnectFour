@@ -26,33 +26,48 @@ class RandomPlayer(Player):
 
 def minimax(env, depth, maximizing_player):
     if (depth == 0) or (env.done):
-        return env.score()
+        return (None, env.score())
     if maximizing_player:
         value = -1000000
+        best_move = None
         for move in env.allowed_moves:
             env_copy = copy.deepcopy(env)
-            search_val = minimax(env_copy.play_move(move), depth - 1, False)
-            value = max(value, search_val)
-        return value
+            search_val = minimax(env_copy.play_move(move), depth - 1, False)[1]
+            if search_val > value:
+                value = search_val
+                best_move = move
+        return best_move, value
     else:
         value = 1000000
+        best_move = None
         for move in env.allowed_moves:
             env_copy = copy.deepcopy(env)
-            search_val = minimax(env_copy.play_move(move), depth - 1, True)
-            value = max(value, search_val)
-        return value
+            search_val = minimax(env_copy.play_move(move), depth - 1, True)[1]
+            if search_val < value:
+                value = search_val
+                best_move = move
+        return best_move, value
+
+def negamax(env, depth):
+    if (depth == 0) or (env.done):
+        return (None, env.score())
+    value = -1000000
+    best_move = None
+    for move in env.allowed_moves:
+        env_copy = copy.deepcopy(env)
+        search_val = -negamax(env_copy.play_move(move), depth - 1)[1]
+        if search_val > value:
+            value = search_val
+            best_move = move
+    return best_move, value
 
 class MinimaxPlayer(Player):
     def __init__(self, depth=1):
         self.depth = depth
 
     def get_move(self, env):
-        best_move = None
-        best_value = 10000000
-        for move in env.allowed_moves:
-            env = copy.deepcopy(env)
-            move_value = minimax(env.play_move(move), self.depth -1, False)
-            if move_value < best_value:
-                best_move = move
-                best_value = move_value
-        return best_move
+        root_env = env
+        env = copy.deepcopy(root_env)
+        move, _ = negamax(env, self.depth)
+
+        return move
