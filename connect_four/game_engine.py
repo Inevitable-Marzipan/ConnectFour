@@ -143,6 +143,8 @@ class C4GameEngine:
         for row in board:
             output += '|'.join(row)
             output += '\n'
+        output += ' '.join([str(x) for x in range(self.COLUMNS)]) 
+        output += '\n'
         return output
 
     def reset(self):
@@ -173,11 +175,17 @@ class C4GameEngine:
 
         score = 0
 
+        opp_player = self.PLAYER_ONE
+        if self.player == self.PLAYER_ONE:
+            opp_player = self.PLAYER_TWO
+
         centre_col = self.COLUMNS // 2
         board = self.get_state()
         center_array = [board[r][centre_col] for r in range(self.ROWS)]
         center_count = center_array.count(self.player)
+        cent_count_opp = center_array.count(opp_player)
         score += center_count * 3
+        score -= cent_count_opp * 3
 
         horizontal = self.get_horizontal()
         vertical = self.get_vertical()
