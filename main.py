@@ -1,6 +1,6 @@
 from connect_four.game_engine import C4GameEngine
 from connect_four.TwoPlayerGame import TwoPlayerGame
-from connect_four.Players import HumanPlayer, RandomPlayer
+from connect_four.Players import HumanPlayer, RandomPlayer, MinimaxPlayer
 from collections import Counter
 import matplotlib.pyplot as plt
 
@@ -8,10 +8,11 @@ def main():
     #p1 = HumanPlayer()
     p1 = RandomPlayer()
     #p2 = HumanPlayer()
-    p2 = RandomPlayer()
+    #p2 = RandomPlayer()
+    p2 = MinimaxPlayer(depth=3)
     env = C4GameEngine()
 
-    rounds = 100000
+    rounds = 10000
     outcomes = []
     winners = []
     round_lengths = []
